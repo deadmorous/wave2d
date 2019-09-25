@@ -1,0 +1,6 @@
+cmake_minimum_required (VERSION 3.1.3) 
+project (src)
+add_subdirectory(wave2d)
+add_subdirectory(animation)
+add_subdirectory(solver_ref)
+# add_subdirectory(solver_cuda)
