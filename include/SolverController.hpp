@@ -45,7 +45,7 @@ public:
 
     template<class Solver>
     void run(
-            Solver *solver,
+            Solver& solver,
             std::function<bool(const DataFrame&)> cb)
     {
         DataFrame nextFrameData = m_prevFrame;
@@ -54,7 +54,7 @@ public:
         DataFrame *nextFrame = &nextFrameData;
         while(true)
         {
-            solver->makeStep(
+            solver.makeStep(
                         m_modelParameters,
                         m_solverParameters,
                         *prevFrame,

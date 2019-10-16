@@ -9,6 +9,8 @@ class DataFrame
     unsigned int m_width;
     unsigned int m_height;
 public:
+    DataFrame() : m_width(0), m_height(0)
+    {}
     DataFrame(const real_type *data, unsigned int width, unsigned int height) :
         m_data(data, data+width*height),
         m_width(width),

@@ -2,6 +2,7 @@
 
 using namespace std;
 
+/*
 void SolverInterface::setPrevStep(vector<vector<float>> value_PrevStep)
 {
     PrevStep=value_PrevStep;
@@ -65,3 +66,4 @@ void SolverInterface::make_calculations(int number)
         make_step();
     }
 }
+*/
