@@ -1,69 +1,49 @@
+#include "real_type.hpp"
+#include "DataFrame.hpp"
+#include "ModelParameters.hpp"
+#include "SolverParameters.hpp"
 #include "SolverInterface.hpp"
 
-using namespace std;
+class RefSolver : public SolverInterface
+{
+public:
+    void makeStep(
+            const ModelParameters& modelParameters,
+            const SolverParameters& solverParameters,
+            const DataFrame& fprev,
+            const DataFrame& fcur,
+            DataFrame& fnext)
+    {
+            for(unsigned int i; i<fprev.width();i++)
+            {
+                for(unsigned int j; j<fprev.height();j++)
+                {
+                    unsigned int i_plus;
+                    unsigned int i_minus;
+                    unsigned int j_plus;
+                    unsigned int j_minus;
+                    if (i==fprev.width()-1)
+                        i_plus=0;
+                    else
+                        i_plus=i+1;
+                    if (i==0)
+                        i_minus=fprev.width()-1;
+                    else
+                        i_minus=i-1;
+                    if (j==fprev.width()-1)
+                        j_plus=0;
+                    else
+                        j_plus=j+1;
+                    if (j==0)
+                        j_minus=fprev.width()-1;
+                    else
+                       j_minus=j-1;
+                    real_type gamma = modelParameters.getWaveSpeed()*
+                                   solverParameters.getTimeStepLength()/solverParameters.getSpatialStepLength();
+                    real_type lapl = fcur.at(i_plus,j)+fcur.at(i,j_plus)+fcur.at(i_minus,j)+fcur.at(i,j_minus)-4*fcur.at(i,j);
+                    real_type u=2*fcur.at(i,j)-fprev.at(i,j)+gamma*gamma*lapl;
 
-/*
-void SolverInterface::setPrevStep(vector<vector<float>> value_PrevStep)
-{
-    PrevStep=value_PrevStep;
-}
-void SolverInterface::setCurrentStep(vector<vector<float>> value_CurrentStep)
-{
-    CurrentStep=value_CurrentStep;
-}
-void SolverInterface::setCoord_step_length(float value_coord_step_length)
-{
-    coord_step_length=value_coord_step_length;
-}
-void SolverInterface::setTime_step_length(float value_time_step_length)
-{
-    time_step_length=value_time_step_length;
-}
-void SolverInterface::setWavespeed(float value_wavespeed)
-{
-    wavespeed=value_wavespeed;
-}
-vector<vector<float>> SolverInterface::getPrevStep()
-{
-    return PrevStep;
-}
-vector<vector<float>> SolverInterface::getCurrentStep()
-{
-    return CurrentStep;
-}
-float SolverInterface::getCoord_step_length()
-{
-    return coord_step_length;
-}
-float SolverInterface::getTime_step_length()
-{
-    return time_step_length;
-}
-float SolverInterface::getWavespeed()
-{
-    return wavespeed;
-}
-void SolverInterface::make_step()
-{
-    vector<vector<float>> NextStep;
-    for(int i; i<PrevStep.size();i++)
-    {
-        for(int j; j<PrevStep[0].size();j++)
-        {
-            float gamma = (wavespeed*time_step_length/coord_step_length)^2;
-            float lapl = CurrentStep[i+1][j]+CurrentStep[i][j+1]+CurrentStep[i-1][j]+CurrentStep[i][j-1]-4*CurrentStep[i][j];
-            u=2*CurrentStep[i][j]-PrevStep[i][j]+gamma*lapl;
-            NextStep[i].push_back(u);
-        }
+                }
+            }
     }
-    PrevStep=CurrentStep;
-    CurrentStep=NextStep;
-}
-void SolverInterface::make_calculations(int number)
-{
-    for(int i; i<number;i++)
-    {
-        make_step();
-    }
-}
-*/
+};
