@@ -8,7 +8,9 @@ file(GLOB HEADER_FILES
     ${CMAKE_SOURCE_DIR}/include/${PROJECT_NAME}/*.h
 )
 
-aux_source_directory(. SOURCE_FILES)
+# aux_source_directory(. SOURCE_FILES)
+file(GLOB SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.cu)
+
 add_library(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES})
 
 set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY
