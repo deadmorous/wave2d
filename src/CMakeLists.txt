@@ -9,4 +9,7 @@ add_subdirectory(wave2d)
 add_subdirectory(animation)
 add_subdirectory(solver_ref)
 add_subdirectory(util)
-add_subdirectory(solver_cuda)
+
+if (USE_CUDA)
+    add_subdirectory(solver_cuda)
+endif()
