@@ -4,6 +4,8 @@
 #include <cmath>
 #include "SolverInterface.hpp"
 #include "SolverController.hpp"
+#include "solver_ref/RefSolver.hpp"
+#include "solver_cuda/CudaSolver.hpp"
 
 using namespace std;
 
@@ -76,7 +78,9 @@ private:
 int main()
 {
     try {
-        StubSolver solver;
+//         StubSolver solver;
+        RefSolver solver;
+//        CudaSolver solver;
         SolverController sc;
 //        const auto StepCount = 100;
 //        const auto Width = 300u, Height = 300u;

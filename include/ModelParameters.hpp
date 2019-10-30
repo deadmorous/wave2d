@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "DataFrame.hpp"
+#include "cuda_defs.h"
 
 using namespace std;
 
@@ -12,7 +13,7 @@ public:
     void setWaveSpeed(real_type waveSpeed) {
         m_waveSpeed = waveSpeed;
     }
-    real_type getWaveSpeed() const {
+    CUDA_HOST_AND_DEVICE real_type getWaveSpeed() const {
         return m_waveSpeed;
     }
 };

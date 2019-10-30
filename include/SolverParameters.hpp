@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "DataFrame.hpp"
+#include "cuda_defs.h"
 
 using namespace std;
 
@@ -14,12 +15,12 @@ public:
         m_spatialStepLength = spatialStepLength;
     }
     void setTimeStepLength(real_type timeStepLength) {
-        m_timeStepLength;
+        m_timeStepLength = timeStepLength;
     }
-    real_type getSpatialStepLength() const {
+    CUDA_HOST_AND_DEVICE real_type getSpatialStepLength() const {
         return m_spatialStepLength;
     }
-    real_type getTimeStepLength() const {
+    CUDA_HOST_AND_DEVICE real_type getTimeStepLength() const {
         return m_timeStepLength;
     }
 };
