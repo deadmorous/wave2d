@@ -28,7 +28,13 @@ __global__ void makeStepKernel(
     }
 }
 
-void CudaSolver::makeStep(
+class CudaSolver::Impl
+{
+public:
+    ~Impl() {
+         maybeFree();
+    }
+    void makeStep(
         const ModelParameters& modelParameters,
         const SolverParameters& solverParameters,
         const DataFrame& fprev,
@@ -41,24 +47,60 @@ void CudaSolver::makeStep(
     dim3 dimGrid((fprev.width()+dimBlock.x-1) / dimBlock.x, (fprev.height()+dimBlock.y-1) / dimBlock.y, 1);
 
     auto size = fnext.width()*fnext.height()*sizeof(real_type);
+    maybeAlloc(size);
 
-    real_type *d_fprev;
-    cudaMalloc(&d_fprev, size);
-    cudaMemcpy(d_fprev, fprev.data(), size, cudaMemcpyHostToDevice);
-    real_type *d_fcur;
-    cudaMalloc(&d_fcur, size);
-    cudaMemcpy(d_fcur, fcur.data(), size, cudaMemcpyHostToDevice);
-    real_type *d_fnext;
-    cudaMalloc(&d_fnext, size);
-    cudaMemcpy(d_fnext, fnext.data(), size, cudaMemcpyHostToDevice);
+    cudaMemcpy(m_fprev, fprev.data(), size, cudaMemcpyHostToDevice);
+    cudaMemcpy(m_fcur, fcur.data(), size, cudaMemcpyHostToDevice);
 
     makeStepKernel<<<dimGrid, dimBlock>>> (
-        d_fnext, d_fprev, d_fcur,
+        m_fnext, m_fprev, m_fcur,
         fnext.width(), fnext.height(),
         modelParameters, solverParameters);
 
-    cudaMemcpy(fnext.data(), d_fnext, size, cudaMemcpyDeviceToHost);
-    cudaFree(d_fprev);
-    cudaFree(d_fcur);
-    cudaFree(d_fnext);
+    cudaMemcpy(fnext.data(), m_fnext, size, cudaMemcpyDeviceToHost);
+}
+
+private:
+    real_type *m_fprev = nullptr;
+    real_type *m_fcur = nullptr;
+    real_type *m_fnext = nullptr;
+
+    void maybeAlloc(size_t size) {
+        if (!m_fprev) {
+            cudaMalloc(&m_fprev, size);
+            cudaMalloc(&m_fcur, size);
+            cudaMalloc(&m_fnext, size);
+        }
+    }
+
+    void maybeFree()
+    {
+        if (m_fprev) {
+            cudaFree(m_fprev);
+            cudaFree(m_fcur);
+            cudaFree(m_fnext);
+            m_fprev = nullptr;
+        }
+    }
+
+};
+
+CudaSolver::CudaSolver() :
+    m_impl(std::make_shared<Impl>())
+{
+}
+
+void CudaSolver::makeStep(
+        const ModelParameters& modelParameters,
+        const SolverParameters& solverParameters,
+        const DataFrame& fprev,
+        const DataFrame& fcur,
+        DataFrame& fnext)
+{
+    m_impl->makeStep(
+        modelParameters,
+        solverParameters,
+        fprev,
+        fcur,
+        fnext);
 }
