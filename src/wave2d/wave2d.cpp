@@ -6,6 +6,7 @@
 #include "SolverController.hpp"
 #include "solver_ref/RefSolver.hpp"
 #include "solver_cuda/CudaSolver.hpp"
+#include "ascii_art.hpp"
 
 using namespace std;
 
@@ -92,7 +93,8 @@ int main()
         auto stepNumber = 0;
         sc.run(solver, [&stepNumber](const DataFrame& f) {
             // cout << "Step " << stepNumber << endl;
-            cout << f << endl;
+            AsciiArt aa(2,f);
+            cout << aa << endl;
             return ++stepNumber < StepCount;
         });
         return 0;
