@@ -9,9 +9,12 @@ class DataFrameTemplate
     unsigned int m_width;
     unsigned int m_height;
 public:
+    using pointer = typename Container::pointer;
+    using const_pointer = typename Container::const_pointer;
+
     DataFrameTemplate() : m_width(0), m_height(0)
     {}
-    DataFrameTemplate(const real_type *data, unsigned int width, unsigned int height) :
+    DataFrameTemplate(const_pointer data, unsigned int width, unsigned int height) :
         m_data(data, data+width*height),
         m_width(width),
         m_height(height)
@@ -21,28 +24,28 @@ public:
         m_width(width),
         m_height(height)
     {}
-    const real_type *data() const {
+    const_pointer data() const {
         return m_data.data();
     }
-    const real_type *cdata() const {
+    const_pointer cdata() const {
         return m_data.data();
     }
-    real_type *data() {
+    pointer data() {
         return m_data.data();
     }
     unsigned int size() const {
         return m_width*m_height;
     }
-    const real_type *begin() const {
+    const_pointer begin() const {
         return m_data.data();
     }
-    real_type *begin() {
+    pointer begin() {
         return m_data.data();
     }
-    const real_type *end() const {
+    const_pointer end() const {
         return m_data.data() + size();
     }
-    real_type *end() {
+    pointer end() {
         return m_data.data() + size();
     }
 
