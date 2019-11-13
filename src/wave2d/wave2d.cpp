@@ -2,13 +2,22 @@
 #include <iostream>
 #include <stdexcept>
 #include <cmath>
-#include "SolverInterface.hpp"
 #include "SolverController.hpp"
+#include "solver_ref/RefSolverDataFrame.hpp"
 #include "solver_ref/RefSolver.hpp"
 #include "solver_cuda/CudaSolver.hpp"
+#include "solver_cuda/CudaSolverDataFrame.hpp"
 #include "ascii_art.hpp"
 
 using namespace std;
+
+//*
+using Solver = RefSolver;
+/*/
+using Solver = CudaSolver;
+//*/
+
+using SolverDataFrame = Solver::DataFrame;
 
 namespace {
 
@@ -29,17 +38,17 @@ void fillStubData(
             *dst = sin(a*x + b*y + c*stepNumber);
 }
 
-DataFrame stubDataFrame(
+SolverDataFrame stubDataFrame(
         unsigned int width,
         unsigned int height,
         unsigned int stepNumber)
 {
     vector<real_type> data(width*height);
     fillStubData(data.data(), width, height, stepNumber);
-    return DataFrame(data.data(), width, height);
+    return SolverDataFrame(data.data(), width, height);
 }
 
-ostream& operator<<(ostream& s, const DataFrame& f)
+ostream& operator<<(ostream& s, const SolverDataFrame& f)
 {
     auto d = f.data();
     for (auto y=0u; y<f.height(); ++y) {
@@ -59,9 +68,9 @@ public:
     void makeStep(
             const ModelParameters& modelParameters,
             const SolverParameters& solverParameters,
-            const DataFrame& fprev,
-            const DataFrame& fcur,
-            DataFrame& fnext)
+            const SolverDataFrame& fprev,
+            const SolverDataFrame& fcur,
+            SolverDataFrame& fnext)
     {
         fillStubData(
                     fnext.data(),
@@ -80,9 +89,9 @@ int main()
 {
     try {
 //         StubSolver solver;
-        RefSolver solver;
+        Solver solver;
 //        CudaSolver solver;
-        SolverController sc;
+        SolverController<SolverDataFrame> sc;
 //        const auto StepCount = 100;
 //        const auto Width = 300u, Height = 300u;
         const auto StepCount = 10;
@@ -91,9 +100,9 @@ int main()
         sc.setPrevStep(stubDataFrame(Width, Height, 0));
         sc.setCurrentStep(stubDataFrame(Width, Height, 1));
         auto stepNumber = 0;
-        sc.run(solver, [&stepNumber](const DataFrame& f) {
+        sc.run(solver, [&stepNumber](const SolverDataFrame& f) {
             // cout << "Step " << stepNumber << endl;
-            AsciiArt aa(2,f);
+            AsciiArt<SolverDataFrame> aa(2,f);
             cout << aa << endl;
             return ++stepNumber < StepCount;
         });

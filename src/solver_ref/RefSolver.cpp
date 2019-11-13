@@ -3,9 +3,9 @@
 void RefSolver::makeStep(
         const ModelParameters& modelParameters,
         const SolverParameters& solverParameters,
-        const DataFrame& fprev,
-        const DataFrame& fcur,
-        DataFrame& fnext)
+        const RefSolverDataFrame& fprev,
+        const RefSolverDataFrame& fcur,
+        RefSolverDataFrame& fnext)
 {
     auto dst = fnext.data();
     for(auto j=0u; j<fprev.height();j++)

@@ -1,16 +1,16 @@
 #include "real_type.hpp"
-#include "DataFrame.hpp"
+#include "RefSolverDataFrame.hpp"
 #include "ModelParameters.hpp"
 #include "SolverParameters.hpp"
-#include "SolverInterface.hpp"
 
-class RefSolver : public SolverInterface
+class RefSolver
 {
 public:
+    using DataFrame = RefSolverDataFrame;
     void makeStep(
             const ModelParameters& modelParameters,
             const SolverParameters& solverParameters,
-            const DataFrame& fprev,
-            const DataFrame& fcur,
-            DataFrame& fnext);
+            const RefSolverDataFrame& fprev,
+            const RefSolverDataFrame& fcur,
+            RefSolverDataFrame& fnext);
 };

@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
-#include "DataFrame.hpp"
 #include "cuda_defs.h"
+#include "real_type.hpp"
 
 using namespace std;
 

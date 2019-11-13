@@ -37,9 +37,9 @@ public:
     void makeStep(
         const ModelParameters& modelParameters,
         const SolverParameters& solverParameters,
-        const DataFrame& fprev,
-        const DataFrame& fcur,
-        DataFrame& fnext)
+        const CudaSolverDataFrame& fprev,
+        const CudaSolverDataFrame& fcur,
+        CudaSolverDataFrame& fnext)
 {
     const unsigned int BLOCK_SIZE = 16;
     auto dst = fnext.data();
@@ -93,9 +93,9 @@ CudaSolver::CudaSolver() :
 void CudaSolver::makeStep(
         const ModelParameters& modelParameters,
         const SolverParameters& solverParameters,
-        const DataFrame& fprev,
-        const DataFrame& fcur,
-        DataFrame& fnext)
+        const CudaSolverDataFrame& fprev,
+        const CudaSolverDataFrame& fcur,
+        CudaSolverDataFrame& fnext)
 {
     m_impl->makeStep(
         modelParameters,

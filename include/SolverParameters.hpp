@@ -1,6 +1,5 @@
 #pragma once
 #include <vector>
-#include "DataFrame.hpp"
 #include "cuda_defs.h"
 
 using namespace std;

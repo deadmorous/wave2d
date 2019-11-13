@@ -3,15 +3,15 @@
 #include "real_type.hpp"
 #include <vector>
 
-class DataFrame
+class CudaSolverDataFrame
 {
     std::vector<real_type> m_data;
     unsigned int m_width;
     unsigned int m_height;
 public:
-    DataFrame() : m_width(0), m_height(0)
+    CudaSolverDataFrame() : m_width(0), m_height(0)
     {}
-    DataFrame(const real_type *data, unsigned int width, unsigned int height) :
+    CudaSolverDataFrame(const real_type *data, unsigned int width, unsigned int height) :
         m_data(data, data+width*height),
         m_width(width),
         m_height(height)

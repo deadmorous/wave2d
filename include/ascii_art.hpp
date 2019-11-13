@@ -1,10 +1,10 @@
 #pragma once
 #include <iostream>
 #include <vector>
-#include "DataFrame.hpp"
 #include "real_type.hpp"
 
 
+template<class DataFrame>
 class AsciiArt
 {
 private:
@@ -68,10 +68,13 @@ public:
             }
         }
     }
-    friend std::ostream& operator << (std::ostream &out,AsciiArt& aa);
+    template<class DataFrame2>
+    friend
+    std::ostream& operator << (std::ostream &out, const AsciiArt<DataFrame2>& aa);
 };
 
-std::ostream& operator << (std::ostream &out,AsciiArt& aa)
+template<class DataFrame>
+inline std::ostream& operator << (std::ostream &out, const AsciiArt<DataFrame>& aa)
 {
     for(auto j=0u; j<aa.m_height;j++)
     {
@@ -79,7 +82,7 @@ std::ostream& operator << (std::ostream &out,AsciiArt& aa)
         {
             out<<aa.canvas[i+j*aa.m_width];
         }
-        out<<endl;
+        out<<std::endl;
     }
 
     return out;

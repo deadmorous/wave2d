@@ -1,21 +1,21 @@
 #include "real_type.hpp"
-#include "DataFrame.hpp"
+#include "CudaSolverDataFrame.hpp"
 #include "ModelParameters.hpp"
 #include "SolverParameters.hpp"
-#include "SolverInterface.hpp"
 #include <memory>
 
-class CudaSolver : public SolverInterface
+class CudaSolver
 {
 public:
+    using DataFrame = CudaSolverDataFrame;
     CudaSolver();
 
     void makeStep(
             const ModelParameters& modelParameters,
             const SolverParameters& solverParameters,
-            const DataFrame& fprev,
-            const DataFrame& fcur,
-            DataFrame& fnext);
+            const CudaSolverDataFrame& fprev,
+            const CudaSolverDataFrame& fcur,
+            CudaSolverDataFrame& fnext);
 private:
     class Impl;
     std::shared_ptr<Impl> m_impl;

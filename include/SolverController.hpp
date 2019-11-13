@@ -3,11 +3,11 @@
 // #include "SolverInterface.hpp"
 #include "ModelParameters.hpp"
 #include "SolverParameters.hpp"
-#include "DataFrame.hpp"
 #include <functional>
 
 using namespace std;
 
+template<class DataFrame>
 class SolverController
 {
 private:
