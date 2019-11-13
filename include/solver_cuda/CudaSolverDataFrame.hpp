@@ -3,6 +3,7 @@
 #include "DataFrameTemplate.hpp"
 #include <thrust/host_vector.h>
 #include <thrust/device_vector.h>
+#include <thrust/copy.h>
 #include <cstdint>
 
 class CudaSolverDataFrame
@@ -21,14 +22,14 @@ class CudaSolverDataFrame
 
     void syncHost() const {
         if (m_tsHost < m_tsDevice) {
-            cudaMemcpy(m_hostData.begin(), m_deviceData.begin(), m_hostData.size()*sizeof(real_type), cudaMemcpyDeviceToHost);
+            thrust::copy(m_deviceData.begin(), m_deviceData.end(), m_hostData.begin());
             m_tsHost = m_tsDevice;
         }
     }
 
     void syncDevice() const {
         if (m_tsDevice < m_tsHost) {
-            cudaMemcpy(m_deviceData.begin(), m_hostData.begin(), m_deviceData.size()*sizeof(real_type), cudaMemcpyHostToDevice);
+            thrust::copy(m_hostData.begin(), m_hostData.end(), m_deviceData.begin());
             m_tsDevice = m_tsHost;
         }
     }
