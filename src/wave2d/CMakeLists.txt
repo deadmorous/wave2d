@@ -8,6 +8,11 @@ add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 add_dependencies(${PROJECT_NAME} animation solver_ref)
 target_link_libraries(${PROJECT_NAME} animation solver_ref)
 
+if (USE_CUDA)
+    add_dependencies(${PROJECT_NAME} animation solver_cuda)
+    target_link_libraries(${PROJECT_NAME} animation solver_cuda)
+endif()
+
 set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY
   COMPILE_DEFINITIONS $<$<CONFIG:Debug>:_DEBUG>
 )
