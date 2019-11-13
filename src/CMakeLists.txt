@@ -12,4 +12,5 @@ add_subdirectory(util)
 
 if (USE_CUDA)
     add_subdirectory(solver_cuda)
+    add_definitions(-DWAVES2D_USE_CUDA)
 endif()

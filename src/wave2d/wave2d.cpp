@@ -3,20 +3,18 @@
 #include <stdexcept>
 #include <cmath>
 #include "SolverController.hpp"
-#include "solver_ref/RefSolverDataFrame.hpp"
-#include "solver_ref/RefSolver.hpp"
+
+#ifdef WAVES2D_USE_CUDA
 #include "solver_cuda/CudaSolver.hpp"
-#include "solver_cuda/CudaSolverDataFrame.hpp"
+using Solver = CudaSolver;
+#else // WAVES2D_USE_CUDA
+#include "solver_ref/RefSolver.hpp"
+using Solver = RefSolver;
+#endif // WAVES2D_USE_CUDA
+
 #include "ascii_art.hpp"
 
 using namespace std;
-
-//*
-using Solver = RefSolver;
-/*/
-using Solver = CudaSolver;
-//*/
-
 using SolverDataFrame = Solver::DataFrame;
 
 namespace {

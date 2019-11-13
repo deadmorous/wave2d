@@ -40,49 +40,19 @@ public:
         const CudaSolverDataFrame& fprev,
         const CudaSolverDataFrame& fcur,
         CudaSolverDataFrame& fnext)
-{
-    const unsigned int BLOCK_SIZE = 16;
-    auto dst = fnext.data();
-    dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE, 1);
-    dim3 dimGrid((fprev.width()+dimBlock.x-1) / dimBlock.x, (fprev.height()+dimBlock.y-1) / dimBlock.y, 1);
-
-    auto size = fnext.width()*fnext.height()*sizeof(real_type);
-    maybeAlloc(size);
-
-    cudaMemcpy(m_fprev, fprev.data(), size, cudaMemcpyHostToDevice);
-    cudaMemcpy(m_fcur, fcur.data(), size, cudaMemcpyHostToDevice);
-
-    makeStepKernel<<<dimGrid, dimBlock>>> (
-        m_fnext, m_fprev, m_fcur,
-        fnext.width(), fnext.height(),
-        modelParameters, solverParameters);
-
-    cudaMemcpy(fnext.data(), m_fnext, size, cudaMemcpyDeviceToHost);
-}
-
-private:
-    real_type *m_fprev = nullptr;
-    real_type *m_fcur = nullptr;
-    real_type *m_fnext = nullptr;
-
-    void maybeAlloc(size_t size) {
-        if (!m_fprev) {
-            cudaMalloc(&m_fprev, size);
-            cudaMalloc(&m_fcur, size);
-            cudaMalloc(&m_fnext, size);
-        }
-    }
-
-    void maybeFree()
     {
-        if (m_fprev) {
-            cudaFree(m_fprev);
-            cudaFree(m_fcur);
-            cudaFree(m_fnext);
-            m_fprev = nullptr;
-        }
-    }
+        const unsigned int BLOCK_SIZE = 16;
+        auto dst = fnext.data();
+        dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE, 1);
+        dim3 dimGrid((fprev.width()+dimBlock.x-1) / dimBlock.x, (fprev.height()+dimBlock.y-1) / dimBlock.y, 1);
 
+        makeStepKernel<<<dimGrid, dimBlock>>> (
+            m_fnext.deviceData().data(),
+            m_fprev.deviceData().data(),
+            m_fcur.deviceData().data(),
+            fnext.width(), fnext.height(),
+            modelParameters, solverParameters);
+    }
 };
 
 CudaSolver::CudaSolver() :
