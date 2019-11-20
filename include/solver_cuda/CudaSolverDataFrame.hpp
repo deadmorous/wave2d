@@ -13,8 +13,8 @@ class CudaSolverDataFrame
 
     mutable CudaSolverHostDataFrame m_hostData;
     mutable CudaSolverDeviceDataFrame m_deviceData;
-    std::uint64_t m_tsHost = 0;
-    std::uint64_t m_tsDevice = 0;
+    mutable std::uint64_t m_tsHost = 0;
+    mutable std::uint64_t m_tsDevice = 0;
     mutable std::uint64_t m_ts = 0;
     std::uint64_t newTimestamp() const {
         return ++m_ts;
@@ -35,9 +35,9 @@ class CudaSolverDataFrame
     }
 
 public:
-    CudaSolverDataFrame() :
-        m_hostData(m_width, m_height),
-        m_deviceData(m_width, m_height)
+    CudaSolverDataFrame(unsigned int width, unsigned int height) :
+        m_hostData(width, height),
+        m_deviceData(width, height)
     {}
     CudaSolverDataFrame(const real_type *data, unsigned int width, unsigned int height) :
         m_hostData(data, width, height),
@@ -76,21 +76,21 @@ public:
     }
 
     unsigned int width() const {
-        return m_width;
+        return m_hostData.width();
     }
     unsigned int height() const {
-        return m_height;
+        return m_hostData.height();
     }
     unsigned int indexOf(unsigned int x, unsigned int y) const {
-        return x+y*m_width;
+        return x+y*m_hostData.width();
     }
     real_type& at(unsigned int x, unsigned int y) {
         m_tsHost = newTimestamp();
-        return m_data.at(indexOf(x, y));
+        return m_hostData.at(x, y);
     }
     const real_type& at(unsigned int x, unsigned int y) const {
         syncHost();
-        return m_data.at(indexOf(x, y));
+        return m_hostData.at(x, y);
     }
 
     CudaSolverDeviceDataFrame& deviceData() {

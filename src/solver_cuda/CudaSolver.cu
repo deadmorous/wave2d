@@ -44,9 +44,9 @@ public:
         dim3 dimGrid((fprev.width()+dimBlock.x-1) / dimBlock.x, (fprev.height()+dimBlock.y-1) / dimBlock.y, 1);
 
         makeStepKernel<<<dimGrid, dimBlock>>> (
-            thrust::raw_pointer_cast<real_type*>(fnext.deviceData().data()),
-            thrust::raw_pointer_cast<const real_type*>(fprev.deviceData().data()),
-            thrust::raw_pointer_cast<const real_type*>(fcur.deviceData().data()),
+            thrust::raw_pointer_cast(fnext.deviceData().data()),
+            thrust::raw_pointer_cast(fprev.deviceData().data()),
+            thrust::raw_pointer_cast(fcur.deviceData().data()),
             fnext.width(), fnext.height(),
             modelParameters, solverParameters);
     }

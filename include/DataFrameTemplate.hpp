@@ -59,9 +59,9 @@ public:
         return x+y*m_width;
     }
     real_type& at(unsigned int x, unsigned int y) {
-        return m_data.at(indexOf(x, y));
+        return m_data[indexOf(x, y)];
     }
     const real_type& at(unsigned int x, unsigned int y) const {
-        return m_data.at(indexOf(x, y));
+        return m_data[indexOf(x, y)];
     }
 };
