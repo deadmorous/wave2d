@@ -104,6 +104,11 @@ int main()
             cout << aa << endl;
             return ++stepNumber < StepCount;
         });
+#ifdef WAVE2D_USE_QT
+        cout << "Using Qt" << endl;
+#else // WAVE2D_USE_QT
+        cout << "Not using Qt" << endl;
+#endif // WAVE2D_USE_QT
         return 0;
     }
     catch(const std::exception& e) {

@@ -8,6 +8,7 @@ if (USE_QT)
     set(CMAKE_AUTOMOC ON)
     set(CMAKE_AUTORCC ON)
     find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
+    add_definitions(-DWAVE2D_USE_QT)
 endif()
 
 
