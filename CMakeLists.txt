@@ -8,6 +8,7 @@ set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 set (BUILD_SHARED_LIBS true)
 
 option (USE_CUDA "Enable CUDA" OFF)
+option (USE_QT "Enable Qt" OFF)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
