@@ -13,11 +13,33 @@ using Solver = RefSolver;
 #endif // WAVES2D_USE_CUDA
 
 #include "ascii_art.hpp"
+#include "FrameToImage.hpp"
 
 using namespace std;
 using SolverDataFrame = Solver::DataFrame;
 
 namespace {
+
+void outputFrameAscii(real_type amplitude, const SolverDataFrame& frame)
+{
+    AsciiArt<SolverDataFrame> aa(amplitude, frame);
+    cout << aa << endl;
+}
+
+void outputFrameImage(real_type amplitude, const SolverDataFrame& frame)
+{
+    FrameToImage f2i(amplitude, frame);
+    f2i.save();
+}
+
+void outputFrame(real_type amplitude, const SolverDataFrame& frame)
+{
+#ifdef WAVE2D_USE_QT
+    outputFrameImage(amplitude, frame);
+#else // WAVE2D_USE_QT
+    outputFrameAscii(amplitude, frame);
+#endif // WAVE2D_USE_QT
+}
 
 void fillStubData(
         real_type *dst,
@@ -33,7 +55,8 @@ void fillStubData(
     auto c = static_cast<real_type>(2*M_PI/nk);
     for (auto y=0u; y<height; ++y)
         for (auto x=0u; x<width; ++x, ++dst)
-            *dst = sin(a*x + b*y + c*stepNumber);
+            // *dst = sin(a*x + b*y + c*stepNumber);
+            *dst = sin(a*x + c*stepNumber) * sin(b*y + c*stepNumber);
 }
 
 SolverDataFrame stubDataFrame(
@@ -90,18 +113,20 @@ int main()
         Solver solver;
 //        CudaSolver solver;
         SolverController<SolverDataFrame> sc;
+        SolverParameters sp;
+        sp.setTimeStepLength(make_real(0.01));
+        sc.setSolverParameters(sp);
 //        const auto StepCount = 100;
 //        const auto Width = 300u, Height = 300u;
-        const auto StepCount = 10;
-        const auto Width = 10u, Height = 10u;
+        const auto StepCount = 100;
+        const auto Width = 100u, Height = 100u;
 
         sc.setPrevStep(stubDataFrame(Width, Height, 0));
         sc.setCurrentStep(stubDataFrame(Width, Height, 1));
         auto stepNumber = 0;
         sc.run(solver, [&stepNumber](const SolverDataFrame& f) {
             // cout << "Step " << stepNumber << endl;
-            AsciiArt<SolverDataFrame> aa(2,f);
-            cout << aa << endl;
+            outputFrame(2, f);
             return ++stepNumber < StepCount;
         });
 #ifdef WAVE2D_USE_QT

@@ -60,6 +60,8 @@ public:
                 {
                     if (frame.at(i,j)<-m_amplitude+k*2*m_amplitude/m_palette.size())
                     {
+                        if (k > m_palette.size())
+                            k = m_palette.size();
                         canvas.push_back(m_palette[k-1]);
                         h=false;
                     }
