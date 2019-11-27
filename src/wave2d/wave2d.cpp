@@ -69,6 +69,75 @@ SolverDataFrame stubDataFrame(
     return SolverDataFrame(data.data(), width, height);
 }
 
+template<class F>
+void makeInitState(
+        SolverController<SolverDataFrame>& sc,
+        const SolverParameters& sp,
+        unsigned int width,
+        unsigned int height,
+        F makeFrameData)
+{
+    vector<real_type> data(width*height);
+
+    makeFrameData(data, sc, sp, width, height, make_real(0));
+    sc.setPrevStep(SolverDataFrame(data.data(), width, height));
+    makeFrameData(data, sc, sp, width, height, sp.getTimeStepLength());
+    sc.setCurrentStep(SolverDataFrame(data.data(), width, height));
+}
+
+void makeRunningWaveInitState(
+        SolverController<SolverDataFrame>& sc,
+        const SolverParameters& sp,
+        unsigned int width,
+        unsigned int height,
+        int k)
+{
+    makeInitState(sc, sp, width, height, [&k](
+                  vector<real_type>& data,
+                  const SolverController<SolverDataFrame>& sc,
+                  const SolverParameters& sp,
+                  unsigned int width,
+                  unsigned int height,
+                  real_type t)
+    {
+        auto d = data.data();
+        auto a = static_cast<real_type>(2*M_PI*k/(width*sp.getSpatialStepLength()));
+        auto c = sc.getModelParameters().getWaveSpeed();
+        for (auto y=0u; y<height; ++y)
+            for (auto x=0u; x<width; ++x, ++d)
+                *d = sin(a*(x-c*t));
+    });
+}
+
+void makeXyWavesInitState(
+        SolverController<SolverDataFrame>& sc,
+        const SolverParameters& sp,
+        unsigned int width,
+        unsigned int height,
+        int kx, int ky)
+{
+    makeInitState(sc, sp, width, height, [&kx, &ky](
+                  vector<real_type>& data,
+                  const SolverController<SolverDataFrame>& sc,
+                  const SolverParameters& sp,
+                  unsigned int width,
+                  unsigned int height,
+                  real_type t)
+    {
+        auto sqr = [](real_type x) { return x*x; };
+        auto d = data.data();
+        auto ax = static_cast<real_type>(2*M_PI*kx/(width*sp.getSpatialStepLength()));
+        auto ay = static_cast<real_type>(2*M_PI*ky/(width*sp.getSpatialStepLength()));
+        auto c = sc.getModelParameters().getWaveSpeed();
+        for (auto y=0u; y<height; ++y)
+            for (auto x=0u; x<width; ++x, ++d) {
+                auto r2 = sqr(make_real(x)/width - make_real(0.5)) + sqr(make_real(y)/height - make_real(0.5));
+                auto cutoff = exp(-r2*50);
+                *d = cutoff * sin(ax*(x-c*t))*sin(ay*y);
+            }
+    });
+}
+
 ostream& operator<<(ostream& s, const SolverDataFrame& f)
 {
     auto d = f.data();
@@ -114,20 +183,23 @@ int main()
 //        CudaSolver solver;
         SolverController<SolverDataFrame> sc;
         SolverParameters sp;
-        sp.setTimeStepLength(make_real(0.01));
+        sp.setTimeStepLength(make_real(0.5));
         sc.setSolverParameters(sp);
 //        const auto StepCount = 100;
 //        const auto Width = 300u, Height = 300u;
         const auto StepCount = 100;
-        const auto Width = 100u, Height = 100u;
+        const auto Width = 500u, Height = 500u;
 
-        sc.setPrevStep(stubDataFrame(Width, Height, 0));
-        sc.setCurrentStep(stubDataFrame(Width, Height, 1));
+//        sc.setPrevStep(stubDataFrame(Width, Height, 0));
+//        sc.setCurrentStep(stubDataFrame(Width, Height, 1));
+        // makeRunningWaveInitState(sc, sp, Width, Height, 3);
+        makeXyWavesInitState(sc, sp, Width, Height, 3, 3);
         auto stepNumber = 0;
         sc.run(solver, [&stepNumber](const SolverDataFrame& f) {
             // cout << "Step " << stepNumber << endl;
-            outputFrame(2, f);
-            return ++stepNumber < StepCount;
+            if (stepNumber % 10 == 0)
+                outputFrame(2, f);
+            return ++stepNumber < 10*StepCount;
         });
 #ifdef WAVE2D_USE_QT
         cout << "Using Qt" << endl;
