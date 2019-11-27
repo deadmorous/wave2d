@@ -1,4 +1,7 @@
 #include "solver_cuda/CudaSolver.hpp"
+#include <iostream>
+
+using namespace std;
 
 __global__ void makeStepKernel(
         real_type *dst, const real_type *fprev, const real_type *fcur,
@@ -55,6 +58,7 @@ public:
 CudaSolver::CudaSolver() :
     m_impl(std::make_shared<Impl>())
 {
+    cout << "Using CUDA solver" << endl;
 }
 
 void CudaSolver::makeStep(

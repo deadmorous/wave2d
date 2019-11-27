@@ -6,6 +6,7 @@
 class RefSolver
 {
 public:
+    RefSolver();
     using DataFrame = RefSolverDataFrame;
     void makeStep(
             const ModelParameters& modelParameters,

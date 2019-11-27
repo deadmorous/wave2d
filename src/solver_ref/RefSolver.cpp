@@ -1,4 +1,12 @@
 #include "solver_ref/RefSolver.hpp"
+#include <iostream>
+
+using namespace std;
+
+RefSolver::RefSolver()
+{
+    cout << "Using CPU solver" << endl;
+}
 
 void RefSolver::makeStep(
         const ModelParameters& modelParameters,
