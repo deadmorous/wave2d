@@ -8,6 +8,7 @@ add_definitions(-DWAVE2D_REAL_TYPE=${WAVE2D_REAL_TYPE})
 add_subdirectory(wave2d)
 add_subdirectory(animation)
 add_subdirectory(solver_ref)
+add_subdirectory(solver_omp)
 add_subdirectory(util)
 
 if (USE_CUDA)
