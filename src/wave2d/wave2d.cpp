@@ -2,6 +2,8 @@
 #include <iostream>
 #include <stdexcept>
 #include <cmath>
+#include <chrono>
+#include <thread>
 #include "SolverController.hpp"
 
 #ifdef WAVES2D_USE_CUDA
@@ -175,6 +177,26 @@ private:
 
 } // anonymous namespace
 
+#if defined(__i386__)
+
+static __inline__ unsigned long long rdtsc(void)
+{
+    unsigned long long int x;
+    __asm__ volatile (".byte 0x0f, 0x31" : "=A" (x));
+    return x;
+}
+
+#elif defined(__x86_64__)
+
+static __inline__ unsigned long long rdtsc(void)
+{
+    unsigned hi, lo;
+    __asm__ __volatile__ ("rdtsc" : "=a"(lo), "=d"(hi));
+    return ( (unsigned long long)lo)|( ((unsigned long long)hi)<<32 );
+}
+
+#endif
+
 int main()
 {
     try {
@@ -195,12 +217,26 @@ int main()
         // makeRunningWaveInitState(sc, sp, Width, Height, 3);
         makeXyWavesInitState(sc, sp, Width, Height, 3, 3);
         auto stepNumber = 0;
+        auto startTime = chrono::high_resolution_clock::now();
+        auto rdtscStartTime = rdtsc();
         sc.run(solver, [&stepNumber](const SolverDataFrame& f) {
             // cout << "Step " << stepNumber << endl;
             if (stepNumber % 10 == 0)
                 outputFrame(2, f);
             return ++stepNumber < 10*StepCount;
         });
+        auto rdtscEndTime = rdtsc();
+        auto endTime = chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::milli> diff = endTime-startTime;
+        cout << "Time elapsed: " << diff.count() << "ms" << endl;
+        cout << "CPU cycles elapsed: " << (rdtscEndTime - rdtscStartTime) << endl;
+
+        auto rdtscOneSecondStart = rdtsc();
+        std::this_thread::sleep_for(chrono::seconds(1));
+        auto rdtscOneSecondEnd = rdtsc();
+        auto rdtscOneSecondDuration = rdtscOneSecondEnd - rdtscOneSecondStart;
+        cout << "CPU time elapsed, based on cycles: " << (rdtscEndTime - rdtscStartTime)/static_cast<double>(rdtscOneSecondDuration) << endl;
+
 #ifdef WAVE2D_USE_QT
         cout << "Using Qt" << endl;
 #else // WAVE2D_USE_QT
