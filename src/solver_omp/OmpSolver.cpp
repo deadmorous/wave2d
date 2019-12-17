@@ -6,7 +6,9 @@ using namespace std;
 
 OmpSolver::OmpSolver()
 {
-    cout << "Using CPU solver" << endl;
+//    int threads = omp_get_max_threads();
+//    cout<<"Num of threads"<<threads<<endl;
+    cout << "Using CPU OMP solver" << endl;
 }
 
 void OmpSolver::makeStep(
@@ -16,10 +18,10 @@ void OmpSolver::makeStep(
         const RefSolverDataFrame& fcur,
         RefSolverDataFrame& fnext)
 {
-#pragma omp parallel default(private)
+#pragma omp parallel shared(fprev,fcur,fnext,modelParameters,solverParameters)
     {
-    #pragma omp for \
-    shared(fprev,fcur,fnext,modelParameters,solverParameters)
+//        cout<<"Num of threads"<<omp_get_num_threads()<<endl;
+    #pragma omp for
         for(auto j=0u; j<fprev.height();j++)
         {
             for(auto i=0u; i<fprev.width();i++)

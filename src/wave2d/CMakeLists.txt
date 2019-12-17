@@ -22,6 +22,11 @@ if (USE_CUDA)
     target_link_libraries(${PROJECT_NAME} animation solver_cuda)
 endif()
 
+if (USE_OpenMP)
+    add_dependencies(${PROJECT_NAME} animation solver_omp)
+    target_link_libraries(${PROJECT_NAME} animation solver_omp)
+endif()
+
 if (USE_QT)
     target_link_libraries(
         ${PROJECT_NAME}
@@ -29,6 +34,7 @@ if (USE_QT)
         Qt5::Widgets
         )
 endif()
+
 
 set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY
   COMPILE_DEFINITIONS $<$<CONFIG:Debug>:_DEBUG>

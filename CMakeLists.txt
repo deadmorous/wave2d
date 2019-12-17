@@ -9,6 +9,7 @@ set (BUILD_SHARED_LIBS true)
 
 option (USE_CUDA "Enable CUDA" OFF)
 option (USE_QT "Enable Qt" OFF)
+option (USE_OpenMP "Enable OpenMP" OFF)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
