@@ -178,9 +178,14 @@ private:
 
 } // anonymous namespace
 
-int main()
+int main(int argc, char *argv[])
 {
     try {
+        cout << "Command line parameters" << endl;
+        for (auto i=0; i<argc; ++i)
+            cout << "  " << argv[i] << endl;
+        cout << endl;
+
 //         StubSolver solver;
         Solver solver;
 //        CudaSolver solver;
