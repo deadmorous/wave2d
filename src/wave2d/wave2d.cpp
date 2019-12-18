@@ -7,10 +7,12 @@
 #ifdef WAVES2D_USE_CUDA
 #include "solver_cuda/CudaSolver.hpp"
 using Solver = CudaSolver;
-#else // WAVES2D_USE_CUDA
+#elif defined (WAVES2D_USE_OPENMP)
 #include "solver_omp/OmpSolver.hpp"
 using Solver = OmpSolver;
-
+#else
+#include "solver_ref/RefSolver.hpp"
+using Solver = RefSolver;
 #endif
 
 #include "ascii_art.hpp"

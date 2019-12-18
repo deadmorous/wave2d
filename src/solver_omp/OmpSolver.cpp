@@ -20,7 +20,7 @@ void OmpSolver::makeStep(
 {
 #pragma omp parallel shared(fprev,fcur,fnext,modelParameters,solverParameters)
     {
-//        cout<<"Num of threads"<<omp_get_num_threads()<<endl;
+        cout<<"Num of threads"<<omp_get_num_threads()<<endl;
     #pragma omp for
         for(auto j=0u; j<fprev.height();j++)
         {

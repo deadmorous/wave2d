@@ -5,21 +5,18 @@ set(WAVE2D_REAL_TYPE float CACHE STRING "Real type for wave2d (float or double)"
 
 add_definitions(-DWAVE2D_REAL_TYPE=${WAVE2D_REAL_TYPE})
 
-add_subdirectory(wave2d)
 add_subdirectory(animation)
 add_subdirectory(solver_ref)
-add_subdirectory(solver_omp)
 add_subdirectory(util)
 
 if (USE_CUDA)
     add_subdirectory(solver_cuda)
     add_definitions(-DWAVES2D_USE_CUDA)
 endif()
-if (USE_Open_MP)
-    find_package(OpenMP)
-    if (OPENMP_FOUND)
-        set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-        set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
-    endif()
+
+if (USE_OpenMP)
+    add_subdirectory(solver_omp)
+    add_definitions(-DWAVES2D_USE_OPENMP)
 endif()
+
+add_subdirectory(wave2d)
