@@ -4,6 +4,8 @@
 #include "ModelParameters.hpp"
 #include "SolverParameters.hpp"
 #include <functional>
+#include <iostream>
+#include "timer.hpp"
 
 using namespace std;
 
@@ -52,14 +54,17 @@ public:
         DataFrame *prevFrame = &m_prevFrame;
         DataFrame *currentFrame = &m_currentFrame;
         DataFrame *nextFrame = &nextFrameData;
+        Timer time;
         while(true)
-        {
+        {            
+            time.startTimer();
             solver.makeStep(
                         m_modelParameters,
                         m_solverParameters,
                         *prevFrame,
                         *currentFrame,
                         *nextFrame);
+            time.stopTimer();
             std::swap(prevFrame, currentFrame);
             std::swap(currentFrame, nextFrame);
             if (!cb(*nextFrame))
@@ -67,5 +72,6 @@ public:
         }
         if (prevFrame != &m_prevFrame)
             swap(m_prevFrame, m_currentFrame);
+        cout<<"Work time "<<time.getDifference()<<endl;
     }
 };
