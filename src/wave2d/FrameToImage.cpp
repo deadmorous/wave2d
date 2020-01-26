@@ -1,10 +1,11 @@
 #include "FrameToImage.hpp"
 #include "real_type.hpp"
 #include <stdexcept>
-#include <QImage>
-#include <QColor>
 
 #ifdef WAVE2D_USE_QT
+
+#include <QImage>
+#include <QColor>
 
 void FrameToImage::save() const
 {
